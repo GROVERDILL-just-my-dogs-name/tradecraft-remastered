@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradecraft Remastered - Coolmath Games Style</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=300;400;500;600;700&family=JetBrains+Mono:wght=400;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom neon effects */
+        .neon-border-green {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+        .neon-border-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        .neon-border-purple {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px) scale(0.8);
+                opacity: 0;
+            }
+        }
+        .float-text {
+            position: absolute;
+            pointer-events: none;
+            animation: float-up 1.2s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-900 overflow-x-hidden">
+
+    <!-- HEADER -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Left Logo & Stats -->
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-500 text-slate-950 p-2 rounded-lg font-bold flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <i data-lucide="trending-up" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wider uppercase text-emerald-400 flex items-center gap-2">
+                        TRADECRAFT <span class="text-xs bg-slate-800 text-slate-300 font-medium px-2 py-0.5 rounded-full border border-slate-700">REMASTERED</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Accept the smart trades. Ignore the traps.</p>
+                </div>
+            </div>
+
+            <!-- Global Portfolio Value Tracker -->
+            <div class="flex items-center gap-6 bg-slate-900/60 px-4 py-2.5 rounded-xl border border-slate-800 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-400 uppercase tracking-widest font-semibold flex items-center gap-1">
+                        Total Portfolio Value <i data-lucide="info" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-300 cursor-pointer" title="The collective base worth of all coins and assets currently in your vault."></i>
+                    </span>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-2xl font-bold text-emerald-400 mono" id="total-portfolio-value">0</span>
+                        <span class="text-xs text-slate-400">coins</span>
+                    </div>
+                </div>
+                <div class="h-8 w-px bg-slate-800 hidden sm:block"></div>
+                <!-- Interactive Mini Indicators -->
+                <div class="hidden sm:flex gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">Active Buffs</span>
+                        <div class="flex gap-1.5 mt-1" id="active-buffs-list">
+                            <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">None</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio & Menu Controllers -->
+            <div class="flex items-center gap-2">
+                <button id="btn-mute" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors duration-200">
+                    <i id="mute-icon" data-lucide="volume-2" class="w-5 h-5"></i>
+                </button>
+                <button id="btn-stats" class="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all duration-200 flex items-center gap-2 text-sm font-semibold">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Stats & Save
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- CONTENT WRAPPER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- LEFT COLUMN: RESOURCES (Gathering Panels) - size 4/12 -->
+        <section class="lg:col-span-4 space-y-4">
+            <div class="bg-slate-950/40 rounded-2xl p-4 border border-slate-800 shadow-xl">
+                <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                    <h2 class="font-bold text-slate-200 flex items-center gap-2 text-md tracking-wide">
+                        <i data-lucide="box" class="w-5 h-5 text-emerald-400"></i> RESOURCE VAULT
+                    </h2>
+                    <span class="text-xs text-slate-400 italic">Click to mine manually</span>
+                </div>
+
+                <!-- Resource List Containers (Populated Dynamically) -->
+                <div id="resources-container" class="space-y-2.5 max-h-[70vh] overflow-y-auto pr-1">
+                    <!-- Dynamic Rows go here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- MIDDLE COLUMN: THE TRADING HUB - size 4/12 -->
+        <section class="lg:col-span-4 space-y-4">
+            <div class="bg-slate-950/40 rounded-2xl p-4 border border-slate-800 shadow-xl relative min-h-[400px] flex flex-col">
+                
+                <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-2">
+                    <h2 class="font-bold text-slate-200 flex items-center gap-2 text-md tracking-wide">
+                        <i data-lucide="repeat" class="w-5 h-5 text-blue-400"></i> LIVE COMMODITIES EXCHANGE
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-blue-400 bg-blue-950/40 border border-blue-900/60 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                            Active: <span id="deal-count" class="mono font-semibold">0</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Deal Spawn Ticker Timer Bar -->
+                <div class="w-full bg-slate-900 rounded-full h-1.5 mb-4 overflow-hidden relative border border-slate-800/80">
+                    <div id="deal-timer-bar" class="bg-blue-500 h-full w-0 transition-all duration-100 ease-linear"></div>
+                </div>
+
+                <!-- Active Trading Deals Container -->
+                <div id="deals-container" class="flex-1 space-y-3 flex flex-col justify-start">
+                    <!-- Deals are dynamically injected here -->
+                    <div id="no-deals-message" class="text-center py-12 text-slate-500 flex flex-col items-center justify-center gap-3 flex-1">
+                        <i data-lucide="inbox" class="w-10 h-10 stroke-1 text-slate-600"></i>
+                        <p class="text-sm">Waiting for incoming deal offers...</p>
+                    </div>
+                </div>
+
+                <!-- Quick Help Tip -->
+                <div class="mt-4 p-3 bg-slate-900/40 border border-slate-800/80 rounded-xl text-xs text-slate-400 space-y-1">
+                    <div class="flex items-center gap-1.5 font-semibold text-slate-300">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-emerald-400"></i>
+                        How does Trading work?
+                    </div>
+                    <p>Compare the total base values of the items you are giving up vs. receiving. If the output value is higher, grab the deal to secure immediate profits!</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: UPGRADES / TECH TREE - size 4/12 -->
+        <section class="lg:col-span-4 space-y-4">
+            <div class="bg-slate-950/40 rounded-2xl p-4 border border-slate-800 shadow-xl">
+                
+                <!-- Upgrade Tabs -->
+                <div class="flex border-b border-slate-800 mb-4 gap-1 p-1 bg-slate-900/40 rounded-xl">
+                    <button onclick="switchTab('gathering')" id="tab-gathering" class="tab-btn flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 bg-emerald-500 text-slate-950 shadow-md">
+                        GATHERING
+                    </button>
+                    <button onclick="switchTab('automation')" id="tab-automation" class="tab-btn flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 text-slate-400 hover:text-white">
+                        AUTOMATION
+                    </button>
+                    <button onclick="switchTab('utility')" id="tab-utility" class="tab-btn flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-150 text-slate-400 hover:text-white">
+                        UTILITY
+                    </button>
+                </div>
+
+                <!-- Branch Info Panel -->
+                <div class="mb-3 px-1 py-2 bg-slate-900/30 rounded-lg border border-slate-900 text-xs text-slate-300 flex items-center gap-2">
+                    <i id="tab-desc-icon" data-lucide="wrench" class="w-4 h-4 text-emerald-400"></i>
+                    <span id="tab-description">Branch description text details.</span>
+                </div>
+
+                <!-- Upgrades Container -->
+                <div id="upgrades-container" class="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
+                    <!-- Tech Tree node items dynamically rendered here -->
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER STATS & SAVE DRAWER / MODAL -->
+    <div id="stats-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full m-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="toggleStatsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
+                <i data-lucide="line-chart" class="text-emerald-400"></i> Tradecraft Performance & Save
+            </h3>
+            
+            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 text-xs">Total Trades Executed</div>
+                    <div class="text-lg font-bold text-emerald-400 mono mt-1" id="stat-trades">0</div>
+                </div>
+                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 text-xs">Total Net Value Profit</div>
+                    <div class="text-lg font-bold text-emerald-400 mono mt-1" id="stat-profits">0</div>
+                </div>
+                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 text-xs">Manual Clicks Logged</div>
+                    <div class="text-lg font-bold text-emerald-400 mono mt-1" id="stat-clicks">0</div>
+                </div>
+                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <div class="text-slate-400 text-xs">Time Trading</div>
+                    <div class="text-lg font-bold text-emerald-400 mono mt-1" id="stat-time">0s</div>
+                </div>
+            </div>
+
+            <!-- BACKUP & CLOUD SAVING TOOLS -->
+            <div class="border-t border-slate-800 pt-4 mb-4 space-y-3">
+                <h4 class="text-xs uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+                    <i data-lucide="save" class="w-4 h-4 text-blue-400"></i> Backup & Progress Cloud
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    
+                    <!-- Box 1: Save Codes -->
+                    <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-slate-200 flex items-center gap-1">
+                                <i data-lucide="file-key" class="w-3.5 h-3.5 text-amber-400"></i> Local Save Code
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-1">Export a portable, encrypted text string to back up your achievements manually.</div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="exportSaveCode()" class="flex-1 py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+                            </button>
+                            <button onclick="promptImportSaveCode()" class="flex-1 py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Box 2: Cloud Storage -->
+                    <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-slate-200 flex items-center justify-between">
+                                <span class="flex items-center gap-1">
+                                    <i data-lucide="cloud" class="w-3.5 h-3.5 text-sky-400"></i> Browser Cloud
+                                </span>
+                                <span id="cloud-status" class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 font-mono">Offline</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-1">Automatically logs in anonymously to sync and retrieve your progress from browser cloud servers.</div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="saveToCloud()" class="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+                                <i data-lucide="cloud-lightning" class="w-3.5 h-3.5"></i> Cloud Save
+                            </button>
+                            <button onclick="loadFromCloud()" class="flex-1 py-1.5 px-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Cloud Load
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="space-y-2 border-t border-slate-800 pt-4">
+                <h4 class="text-xs uppercase font-bold text-slate-400 tracking-wider">Commodities Value Standard Matrix</h4>
+                <div class="grid grid-cols-3 gap-2 text-xs font-mono text-slate-300" id="stats-commodity-matrix">
+                    <!-- Auto-filled list of resource valuations -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION SYSTEM -->
+    <div id="notification-toast" class="fixed bottom-4 right-4 z-50 pointer-events-none translate-y-20 opacity-0 transition-all duration-300">
+        <div class="bg-slate-900 border border-slate-800 text-slate-200 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <div class="bg-emerald-500/10 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/20">
+                <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <div class="text-xs text-slate-400" id="toast-title">Tradecraft Hub</div>
+                <div class="text-sm font-semibold" id="toast-msg">Upgrade unlocked successfully!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM IMPORT CODE DIALOG -->
+    <div id="import-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full m-4 shadow-2xl space-y-4">
+            <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                <i data-lucide="upload" class="text-amber-400"></i> Import Save Code
+            </h3>
+            <p class="text-xs text-slate-400">Paste your generated backup save code string below to restore your progress.</p>
+            <textarea id="import-code-area" class="w-full h-24 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none" placeholder="Paste your save code here..."></textarea>
+            <div class="flex gap-3 justify-end text-sm">
+                <button onclick="closeImportModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold">
+                    Cancel
+                </button>
+                <button onclick="submitImportSaveCode()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold">
+                    Load Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OVER / ASCENSION VICTORY SCREEN -->
+    <div id="victory-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-900 border-2 border-purple-500/40 rounded-3xl p-8 max-w-lg w-full m-4 shadow-2xl text-center space-y-6 relative overflow-hidden">
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+            
+            <div class="mx-auto w-20 h-20 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <i data-lucide="crown" class="w-10 h-10 animate-bounce"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-3xl font-extrabold tracking-tight text-white">TRADECRAFT CONQUERED!</h3>
+                <p class="text-slate-300 text-sm">You have acquired the pinnacle of modern utility automation and reached maximum portfolio sophistication!</p>
+            </div>
+
+            <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 text-left space-y-1.5">
+                <div class="text-xs text-slate-400 uppercase tracking-widest font-bold">Final Accomplishments</div>
+                <div class="flex justify-between text-sm"><span class="text-slate-400">Total Portfolio Value:</span> <span class="font-bold text-emerald-400" id="vic-val">0</span></div>
+                <div class="flex justify-between text-sm"><span class="text-slate-400">Trades Finalized:</span> <span class="font-bold text-blue-400" id="vic-trades">0</span></div>
+                <div class="flex justify-between text-sm"><span class="text-slate-400">Time to Complete:</span> <span class="font-bold text-purple-400" id="vic-time">0s</span></div>
+            </div>
+
+            <button onclick="resetGame()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold transition-all duration-200 shadow-lg shadow-emerald-500/20">
+                Ascend & Play Again
+            </button>
+        </div>
+    </div>
+
+    <!-- GAME LOGIC SCRIPT (MODULAR) -->
+    <script type="module">
+        // Import Firebase CDN Core Assets securely
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- SOUND EFFECTS (Web Audio API Synthesizer) ---
+        let isMuted = false;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'trade-success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); 
+                osc.frequency.setValueAtTime(659.25, now + 0.08); 
+                osc.frequency.setValueAtTime(783.99, now + 0.16); 
+                osc.frequency.setValueAtTime(1046.50, now + 0.24); 
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'upgrade') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.25);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+        }
+
+        // --- GAME CORE STATE ---
+        const GAME_STATE = {
+            resources: {
+                coin: { id: 'coin', name: 'Coin', amount: 20, value: 1, color: 'emerald', icon: 'coins', unlocked: true },
+                wood: { id: 'wood', name: 'Wood', amount: 0, value: 3, color: 'amber', icon: 'trees', unlocked: false },
+                brick: { id: 'brick', name: 'Brick', amount: 0, value: 8, color: 'orange', icon: 'brick', unlocked: false },
+                copper: { id: 'copper', name: 'Copper', amount: 0, value: 20, color: 'yellow', icon: 'anvil', unlocked: false },
+                iron: { id: 'iron', name: 'Iron', amount: 0, value: 60, color: 'zinc', icon: 'axe', unlocked: false },
+                silver: { id: 'silver', name: 'Silver', amount: 0, value: 180, color: 'slate', icon: 'sparkles', unlocked: false },
+                gold: { id: 'gold', name: 'Gold', amount: 0, value: 600, color: 'yellow', icon: 'crown', unlocked: false },
+                platinum: { id: 'platinum', name: 'Platinum', amount: 0, value: 2000, color: 'cyan', icon: 'gem', unlocked: false },
+                bluegem: { id: 'bluegem', name: 'Blue Gem', amount: 0, value: 7000, color: 'blue', icon: 'diamond', unlocked: false },
+                ruby: { id: 'ruby', name: 'Ruby', amount: 0, value: 25000, color: 'rose', icon: 'flame', unlocked: false },
+                amethyst: { id: 'amethyst', name: 'Amethyst', amount: 0, value: 100000, color: 'purple', icon: 'infinity', unlocked: false }
+            },
+            upgrades: {
+                // Path 1: Gathering
+                work_gloves: { id: 'work_gloves', path: 'gathering', name: 'Work Gloves', desc: 'Allows you to click & gather Wood.', cost: 10, costRes: 'coin', purchased: false },
+                diy_brick: { id: 'diy_brick', path: 'gathering', name: 'DIY Brick Set', desc: 'Unlocks manual clay-baking. Get Bricks.', cost: 100, costRes: 'coin', purchased: false },
+                iron_axe: { id: 'iron_axe', path: 'gathering', name: 'Iron Axe', desc: 'Doubles all manually gathered Wood.', cost: 400, costRes: 'coin', purchased: false },
+                mine_cart: { id: 'mine_cart', path: 'gathering', name: 'Mine Cart', desc: 'Allows you to gather Copper manually.', cost: 1200, costRes: 'coin', purchased: false },
+                metal_detector: { id: 'metal_detector', path: 'gathering', name: 'Metal Detector', desc: 'Allows you to gather Iron manually.', cost: 5000, costRes: 'coin', purchased: false },
+                jewelry_training: { id: 'jewelry_training', path: 'gathering', name: 'Jewelry Training', desc: 'Unlocks manual Silver smelting.', cost: 20000, costRes: 'coin', purchased: false },
+                philosophers_stone: { id: 'philosophers_stone', path: 'gathering', name: 'Philosopher\'s Stone', desc: 'Unlocks manual Gold transmuting.', cost: 80000, costRes: 'coin', purchased: false },
+                clever_name: { id: 'clever_name', path: 'gathering', name: '[Clever Name]', desc: 'Unlocks manual Platinum gathering.', cost: 350000, costRes: 'coin', purchased: false },
+                ruby_pick: { id: 'ruby_pick', path: 'gathering', name: 'Ruby Pickaxe', desc: 'Unlocks manual Ruby gathering.', cost: 1500000, costRes: 'coin', purchased: false },
+
+                // Path 2: Automation
+                invest: { id: 'invest', path: 'automation', name: 'Invest', desc: 'Passively yields 1 Coin per second.', cost: 50, costRes: 'coin', purchased: false },
+                treants: { id: 'treants', path: 'automation', name: 'Treants', desc: 'Trees walk into your storage. +1 Wood/sec.', cost: 250, costRes: 'coin', purchased: false },
+                tiny_golems: { id: 'tiny_golems', path: 'automation', name: 'Tiny Golems', desc: 'Golems break and reform. +1 Brick/sec.', cost: 1500, costRes: 'coin', purchased: false },
+                lawyer: { id: 'lawyer', path: 'automation', name: 'Lawyer', desc: 'Doubles passive Coin income.', cost: 6000, costRes: 'coin', purchased: false },
+                motherload_machine: { id: 'motherload_machine', path: 'automation', name: 'Motherload Machine', desc: 'Passive drill. +2 Copper and +1 Iron/sec.', cost: 25000, costRes: 'coin', purchased: false },
+                silver_and_gold: { id: 'silver_and_gold', path: 'automation', name: 'Silver & Gold!', desc: 'Passive alchemy. +2 Silver and +1 Gold/sec.', cost: 100000, costRes: 'coin', purchased: false },
+                autoplat: { id: 'autoplat', path: 'automation', name: 'Autoplat', desc: 'Passive high tech synthesis. +1 Platinum/sec.', cost: 500000, costRes: 'coin', purchased: false },
+                shine: { id: 'shine', path: 'automation', name: 'Shine!', desc: 'Crystallize deep minerals. +0.5 Blue Gems/sec.', cost: 2000000, costRes: 'coin', purchased: false },
+                the_last_one: { id: 'the_last_one', path: 'automation', name: 'The Last One', desc: 'Endgame generator. +0.2 Amethyst/sec.', cost: 10000000, costRes: 'coin', purchased: false },
+
+                // Path 3: Utility / Deals
+                more_deals: { id: 'more_deals', path: 'utility', name: 'More Deals!', desc: 'Max concurrent deal capacity grows to 4.', cost: 30, costRes: 'coin', purchased: false },
+                multitasking: { id: 'multitasking', path: 'utility', name: 'Multitasking', desc: 'Allows up to 5 concurrent active trade deals.', cost: 150, costRes: 'coin', purchased: false },
+                spaaace: { id: 'spaaace', path: 'utility', name: 'Spaaace', desc: 'Expanded trading interface. 7 active deals max.', cost: 800, costRes: 'coin', purchased: false },
+                utility_tech: { id: 'utility_tech', path: 'utility', name: 'Utility Tech', desc: 'Adds time indicators to active trades.', cost: 3000, costRes: 'coin', purchased: false },
+                wide_connections: { id: 'wide_connections', path: 'utility', name: 'Wide Connections', desc: 'Connect global partners. 9 active deals max.', cost: 12000, costRes: 'coin', purchased: false },
+                calculator: { id: 'calculator', path: 'utility', name: 'The Calculator', desc: 'Highlights profitable deals in green, losses in red.', cost: 50000, costRes: 'coin', purchased: false },
+                subscribe_gfmag: { id: 'subscribe_gfmag', path: 'utility', name: 'Subscribe GFMAG', desc: 'Makes all generated trade rates 20% better.', cost: 200000, costRes: 'coin', purchased: false },
+                bribe_them_all: { id: 'bribe_them_all', path: 'utility', name: 'Bribe Them All', desc: 'Guarantees generated deals only ask for resources you own.', cost: 1000000, costRes: 'coin', purchased: false },
+                nothing_more: { id: 'nothing_more', path: 'utility', name: 'Nothing More', desc: 'Pinnacle upgrade. Boosts global automation by 50%.', cost: 5000000, costRes: 'coin', purchased: false }
+            },
+            deals: [],
+            stats: {
+                totalTrades: 0,
+                totalProfits: 0,
+                manualClicks: 0,
+                playTime: 0
+            }
+        };
+
+        let currentTab = 'gathering';
+        let dealSpawnTimer = 0;
+        let dealSpawnInterval = 6000; 
+        let lastTimestamp = Date.now();
+
+        // --- FIREBASE ENVIRONMENT STATE ---
+        let hasFirebase = false;
+        let db, auth, appId;
+        let currentUser = null;
+
+        // Icon SVG map for internal render because we are doing a single file
+        const customIcons = {
+            coins: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><circle cx="18" cy="18" r="4"/><path d="M12 18a6 6 0 0 0-6-6"/></svg>`,
+            trees: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7H5l7 7ZM12 19v3M12 2l6 6H6l6-6Z"/></svg>`,
+            brick: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 9v6M15 15v6M12 3v6"/></svg>`,
+            anvil: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14h3a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-3M4 14h13v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4ZM14 4H6c-1.1 0-2 .9-2 2v2h12V6c0-1.1-.9-2-2-2Z"/></svg>`,
+            axe: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 2 8 8M17.5 5.5l-3 3M11 11.5l-9 9M11 11.5c.8-.8.8-2 0-2.8l-2-2c-.8-.8-2-.8-2.8 0L2 11.5h6l3 3h3l-3-3Z"/></svg>`,
+            sparkles: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+            crown: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>`,
+            gem: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>`,
+            diamond: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 12l10 10 10-10z"/></svg>`,
+            flame: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+            infinity: `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4z"/></svg>`
+        };
+
+        const resourceColors = {
+            coin: 'from-emerald-500/20 to-teal-500/10 text-emerald-400 border-emerald-500/20',
+            wood: 'from-amber-600/20 to-yellow-600/10 text-amber-400 border-amber-600/20',
+            brick: 'from-orange-500/20 to-red-500/10 text-orange-400 border-orange-500/20',
+            copper: 'from-yellow-600/20 to-amber-500/10 text-yellow-500 border-yellow-600/20',
+            iron: 'from-zinc-500/20 to-slate-500/10 text-zinc-300 border-zinc-500/20',
+            silver: 'from-slate-400/20 to-sky-300/10 text-slate-200 border-slate-400/20',
+            gold: 'from-yellow-400/20 to-amber-400/10 text-yellow-300 border-yellow-400/20',
+            platinum: 'from-cyan-400/20 to-blue-400/10 text-cyan-300 border-cyan-400/20',
+            bluegem: 'from-blue-500/20 to-indigo-500/10 text-blue-400 border-blue-500/20',
+            ruby: 'from-rose-500/20 to-red-500/10 text-rose-400 border-rose-500/20',
+            amethyst: 'from-purple-500/20 to-fuchsia-500/10 text-purple-400 border-purple-500/20'
+        };
+
+        // --- GATHER CONFIG ---
+        function getGatherPower(resId) {
+            let base = 1;
+            if (resId === 'wood' && GAME_STATE.upgrades.iron_axe.purchased) base *= 2;
+            if ((resId === 'copper' || resId === 'iron') && GAME_STATE.upgrades.metal_detector.purchased) base *= 2;
+            return base;
+        }
+
+        // --- SWITCH TABS ---
+        const tabDescriptions = {
+            gathering: 'Unlocks manual capabilities & increases clicking harvesting strength.',
+            automation: 'Improves automatic background production streams for passive income.',
+            utility: 'Improves trading terms, interfaces, capacity, and reveals margins.'
+        };
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-slate-950', 'text-slate-400');
+                btn.classList.add('text-slate-400', 'hover:text-white');
+            });
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.remove('text-slate-400', 'hover:text-white');
+            activeBtn.classList.add('bg-emerald-500', 'text-slate-950');
+
+            document.getElementById('tab-description').innerText = tabDescriptions[tab];
+            const descIcon = document.getElementById('tab-desc-icon');
+            if (tab === 'gathering') descIcon.setAttribute('data-lucide', 'wrench');
+            else if (tab === 'automation') descIcon.setAttribute('data-lucide', 'cpu');
+            else descIcon.setAttribute('data-lucide', 'sliders');
+            lucide.createIcons();
+
+            renderUpgrades();
+        }
+
+        // --- GATHER MANUALLY ---
+        function gatherResource(resId, event) {
+            const res = GAME_STATE.resources[resId];
+            if (!res.unlocked) return;
+
+            const power = getGatherPower(resId);
+            res.amount += power;
+            GAME_STATE.stats.manualClicks++;
+            playSound('click');
+
+            if (event) {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                createFloatingText(`+${power} ${res.name}`, event.currentTarget, x, y);
+            }
+
+            updateVaultUI();
+            updatePortfolioValue();
+        }
+
+        function createFloatingText(text, parent, x, y) {
+            const div = document.createElement('div');
+            div.className = 'float-text text-sm font-bold text-emerald-400 select-none pointer-events-none drop-shadow-md';
+            div.style.left = `${x}px`;
+            div.style.top = `${y}px`;
+            div.innerText = text;
+            parent.appendChild(div);
+            setTimeout(() => div.remove(), 1200);
+        }
+
+        // --- UPDATE PORTFOLIO VALUE ---
+        function getPortfolioValue() {
+            let total = 0;
+            Object.values(GAME_STATE.resources).forEach(res => {
+                total += res.amount * res.value;
+            });
+            return total;
+        }
+
+        function updatePortfolioValue() {
+            const val = getPortfolioValue();
+            document.getElementById('total-portfolio-value').innerText = val.toLocaleString();
+            
+            if (val >= 100000000) { 
+                triggerVictory();
+            }
+        }
+
+        // --- DRAW VAULT PANELS ---
+        function updateVaultUI() {
+            const container = document.getElementById('resources-container');
+            container.innerHTML = '';
+
+            Object.values(GAME_STATE.resources).forEach(res => {
+                if (res.id === 'coin' || res.unlocked) {
+                    const row = document.createElement('div');
+                    row.className = `p-3 rounded-xl border bg-gradient-to-r ${resourceColors[res.id]} flex items-center justify-between gap-3 transition-all duration-300 relative overflow-hidden`;
+                    
+                    const iconSVG = customIcons[res.icon] || '';
+                    const clickPower = getGatherPower(res.id);
+
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-slate-950/40 rounded-lg border border-slate-800/80">
+                                ${iconSVG}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-100 flex items-center gap-1.5 text-sm">
+                                    ${res.name}
+                                    <span class="text-[10px] text-slate-400 font-mono font-normal">Val: ${res.value}</span>
+                                </h3>
+                                <div class="text-xs text-slate-400 font-medium">
+                                    Owned: <span class="mono font-bold text-slate-200">${Math.floor(res.amount).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="gatherResource('${res.id}', event)" class="px-3.5 py-1.5 rounded-lg bg-slate-950/60 hover:bg-slate-950 text-slate-300 hover:text-white border border-slate-800/60 transition-all duration-150 text-xs font-semibold flex items-center gap-1">
+                            +${clickPower} <span class="hidden sm:inline">Gather</span>
+                        </button>
+                    `;
+                    container.appendChild(row);
+                } else {
+                    const row = document.createElement('div');
+                    row.className = 'p-3 rounded-xl border border-dashed border-slate-800/80 bg-slate-950/20 flex items-center justify-between opacity-50';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-slate-900 rounded-lg text-slate-600">
+                                <i data-lucide="lock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-500 text-sm">??? Locked</h3>
+                                <div class="text-[10px] text-slate-500 font-mono">Unlock via corresponding Gathering upgrade</div>
+                            </div>
+                        </div>
+                        <span class="text-xs text-slate-600 italic">Locked</span>
+                    `;
+                    container.appendChild(row);
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // --- GENERATE TRADE DEALS ---
+        function getUnlockedResources() {
+            return Object.values(GAME_STATE.resources).filter(r => r.unlocked);
+        }
+
+        function createTradeDeal() {
+            const unlocked = getUnlockedResources();
+            if (unlocked.length === 0) return;
+
+            let maxDeals = 3;
+            if (GAME_STATE.upgrades.more_deals.purchased) maxDeals = 4;
+            if (GAME_STATE.upgrades.multitasking.purchased) maxDeals = 5;
+            if (GAME_STATE.upgrades.spaaace.purchased) maxDeals = 7;
+            if (GAME_STATE.upgrades.wide_connections.purchased) maxDeals = 9;
+
+            if (GAME_STATE.deals.length >= maxDeals) return;
+
+            let giveRes = unlocked[Math.floor(Math.random() * unlocked.length)];
+
+            if (GAME_STATE.upgrades.bribe_them_all.purchased) {
+                const affordableList = unlocked.filter(r => r.amount > 0);
+                if (affordableList.length > 0) {
+                    giveRes = affordableList[Math.floor(Math.random() * affordableList.length)];
+                }
+            }
+
+            let getRes = unlocked[Math.floor(Math.random() * unlocked.length)];
+            if (giveRes.id === getRes.id) {
+                const alternatives = unlocked.filter(r => r.id !== giveRes.id);
+                if (alternatives.length > 0) {
+                    getRes = alternatives[Math.floor(Math.random() * alternatives.length)];
+                } else {
+                    return; 
+                }
+            }
+
+            let maxExpectedQty = Math.max(10, Math.round(100 / giveRes.value));
+            if (giveRes.amount > 0) {
+                maxExpectedQty = Math.min(giveRes.amount, maxExpectedQty);
+            }
+            const giveQty = Math.max(1, Math.round(Math.random() * maxExpectedQty + 1));
+
+            const giveValue = giveQty * giveRes.value;
+
+            let marginMultiplier = 0.65 + Math.random() * 0.8;
+
+            if (GAME_STATE.upgrades.subscribe_gfmag.purchased) {
+                marginMultiplier *= 1.2; 
+            }
+
+            let getQty = Math.max(1, Math.round((giveValue * marginMultiplier) / getRes.value));
+
+            if (getQty === 0) getQty = 1;
+
+            const finalGetValue = getQty * getRes.value;
+            const profitValue = finalGetValue - giveValue;
+            const profitPercent = Math.round((profitValue / giveValue) * 100);
+
+            const duration = 15 + Math.floor(Math.random() * 20); 
+
+            const deal = {
+                id: crypto.randomUUID(),
+                give: { id: giveRes.id, name: giveRes.name, amount: giveQty },
+                get: { id: getRes.id, name: getRes.name, amount: getQty },
+                profitValue: profitValue,
+                profitPercent: profitPercent,
+                totalDuration: duration,
+                timeLeft: duration
+            };
+
+            GAME_STATE.deals.push(deal);
+            renderDeals();
+        }
+
+        // --- DRAW DEALS ---
+        function renderDeals() {
+            const container = document.getElementById('deals-container');
+            const noDealsMsg = document.getElementById('no-deals-message');
+            document.getElementById('deal-count').innerText = GAME_STATE.deals.length;
+
+            if (GAME_STATE.deals.length === 0) {
+                noDealsMsg.classList.remove('hidden');
+                Array.from(container.children).forEach(child => {
+                    if (child.id !== 'no-deals-message') child.remove();
+                });
+                return;
+            } else {
+                noDealsMsg.classList.add('hidden');
+            }
+
+            const currentIds = GAME_STATE.deals.map(d => d.id);
+            Array.from(container.children).forEach(child => {
+                if (child.id !== 'no-deals-message' && !currentIds.includes(child.dataset.id)) {
+                    child.remove();
+                }
+            });
+
+            GAME_STATE.deals.forEach(deal => {
+                let dealEl = container.querySelector(`[data-id="${deal.id}"]`);
+                const giveRes = GAME_STATE.resources[deal.give.id];
+                const getRes = GAME_STATE.resources[deal.get.id];
+                const canAfford = giveRes.amount >= deal.give.amount;
+
+                let evaluationClass = 'text-slate-400';
+                let evaluationText = '';
+                if (GAME_STATE.upgrades.calculator.purchased) {
+                    if (deal.profitPercent > 0) {
+                        evaluationClass = 'text-emerald-400 bg-emerald-950/40 border-emerald-900/60 font-semibold';
+                        evaluationText = `<span class="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/30 px-2 py-0.5 rounded-full"><i data-lucide="trending-up" class="w-3 h-3"></i> +${deal.profitPercent}% Profit</span>`;
+                    } else if (deal.profitPercent < 0) {
+                        evaluationClass = 'text-rose-400 bg-rose-950/40 border-rose-900/60';
+                        evaluationText = `<span class="flex items-center gap-1 text-[10px] text-rose-400 bg-rose-950/40 border border-rose-900/30 px-2 py-0.5 rounded-full"><i data-lucide="trending-down" class="w-3 h-3"></i> ${deal.profitPercent}% Loss</span>`;
+                    } else {
+                        evaluationClass = 'text-slate-400 bg-slate-900 border-slate-800';
+                        evaluationText = `<span class="text-[10px] bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-full">Breakeven</span>`;
+                    }
+                }
+
+                if (!dealEl) {
+                    dealEl = document.createElement('div');
+                    dealEl.dataset.id = deal.id;
+                    dealEl.className = 'p-3 bg-slate-900 rounded-xl border border-slate-800 flex flex-col gap-2 hover:border-slate-700/80 transition-all duration-150 relative';
+                }
+
+                const giveIcon = customIcons[giveRes.icon] || '';
+                const getIcon = customIcons[getRes.icon] || '';
+
+                const countdownHTML = GAME_STATE.upgrades.utility_tech.purchased 
+                    ? `<span class="text-xs text-slate-500 font-mono flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${Math.ceil(deal.timeLeft)}s</span>`
+                    : '';
+
+                dealEl.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-1.5">
+                            ${evaluationText}
+                        </div>
+                        ${countdownHTML}
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2">
+                        <!-- Give Unit -->
+                        <div class="flex items-center gap-2 flex-1">
+                            <span class="text-rose-400 bg-rose-950/20 border border-rose-900/40 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0">-</span>
+                            <div class="truncate">
+                                <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">GIVE</div>
+                                <div class="text-sm font-bold text-slate-100 flex items-center gap-1">
+                                    <span class="mono">${deal.give.amount}</span> ${deal.give.name}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arrow -->
+                        <div class="text-slate-500 flex items-center shrink-0">
+                            <i data-lucide="arrow-right-left" class="w-4 h-4"></i>
+                        </div>
+
+                        <!-- Get Unit -->
+                        <div class="flex items-center gap-2 flex-1 justify-end text-right">
+                            <div class="truncate">
+                                <div class="text-xs text-slate-400 uppercase tracking-wider font-semibold">GET</div>
+                                <div class="text-sm font-bold text-slate-100 flex items-center gap-1 justify-end">
+                                    <span class="mono text-emerald-400 font-bold">${deal.get.amount}</span> ${deal.get.name}
+                                </div>
+                            </div>
+                            <span class="text-emerald-400 bg-emerald-950/20 border border-emerald-900/40 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0">+</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Trigger -->
+                    <div class="mt-2.5 pt-2 border-t border-slate-800/60 flex items-center justify-between">
+                        <span class="text-[10px] ${canAfford ? 'text-emerald-500' : 'text-rose-500'} font-medium">
+                            ${canAfford ? 'Affordable!' : `Need ${Math.ceil(deal.give.amount - giveRes.amount)} more`}
+                        </span>
+                        <button onclick="executeTrade('${deal.id}')" ${!canAfford ? 'disabled' : ''} class="px-4 py-1.5 rounded-lg font-bold text-xs border transition-all duration-150 ${
+                            canAfford 
+                            ? 'bg-blue-600 hover:bg-blue-500 text-white border-blue-500/30' 
+                            : 'bg-slate-950/40 border-slate-800 text-slate-500 cursor-not-allowed'
+                        }">
+                            Trade
+                        </button>
+                    </div>
+
+                    <!-- Life timer progress bar inside card -->
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-950 overflow-hidden rounded-b-xl">
+                        <div class="bg-blue-500/40 h-full transition-all duration-100 ease-linear" style="width: ${(deal.timeLeft / deal.totalDuration) * 100}%"></div>
+                    </div>
+                `;
+
+                if (!container.querySelector(`[data-id="${deal.id}"]`)) {
+                    container.appendChild(dealEl);
+                }
+            });
+            lucide.createIcons();
+        }
+
+        // --- EXECUTE TRADE ---
+        function executeTrade(dealId) {
+            const dealIdx = GAME_STATE.deals.findIndex(d => d.id === dealId);
+            if (dealIdx === -1) return;
+
+            const deal = GAME_STATE.deals[dealIdx];
+            const giveRes = GAME_STATE.resources[deal.give.id];
+            const getRes = GAME_STATE.resources[deal.get.id];
+
+            if (giveRes.amount < deal.give.amount) {
+                playSound('error');
+                return;
+            }
+
+            giveRes.amount -= deal.give.amount;
+            getRes.amount += deal.get.amount;
+
+            GAME_STATE.stats.totalTrades++;
+            GAME_STATE.stats.totalProfits += deal.profitValue;
+
+            GAME_STATE.deals.splice(dealIdx, 1);
+
+            playSound('trade-success');
+            showToast('Deal finalized!', `Traded ${deal.give.amount} ${deal.give.name} for ${deal.get.amount} ${deal.get.name}.`);
+
+            updateVaultUI();
+            updatePortfolioValue();
+            renderDeals();
+        }
+
+        // --- UPGRADE SYSTEM ---
+        function purchaseUpgrade(upgId) {
+            const upg = GAME_STATE.upgrades[upgId];
+            if (!upg || upg.purchased) return;
+
+            const costRes = GAME_STATE.resources[upg.costRes];
+            if (costRes.amount < upg.cost) {
+                playSound('error');
+                showToast('Insufficient Capital', `You need ${Math.ceil(upg.cost - costRes.amount)} more coins to purchase ${upg.name}.`, true);
+                return;
+            }
+
+            costRes.amount -= upg.cost;
+            upg.purchased = true;
+
+            handleUpgradeActivation(upgId);
+
+            playSound('upgrade');
+            showToast('Upgrade Purchased!', `${upg.name} is now online and active.`);
+            
+            updateVaultUI();
+            updatePortfolioValue();
+            renderUpgrades();
+            updateBuffsPanel();
+        }
+
+        function handleUpgradeActivation(id) {
+            if (id === 'work_gloves') GAME_STATE.resources.wood.unlocked = true;
+            if (id === 'diy_brick') GAME_STATE.resources.brick.unlocked = true;
+            if (id === 'mine_cart') GAME_STATE.resources.copper.unlocked = true;
+            if (id === 'metal_detector') GAME_STATE.resources.iron.unlocked = true;
+            if (id === 'jewelry_training') GAME_STATE.resources.silver.unlocked = true;
+            if (id === 'philosophers_stone') GAME_STATE.resources.gold.unlocked = true;
+            if (id === 'clever_name') GAME_STATE.resources.platinum.unlocked = true;
+            if (id === 'ruby_pick') GAME_STATE.resources.ruby.unlocked = true;
+
+            if (id === 'treants') GAME_STATE.resources.wood.unlocked = true;
+            if (id === 'tiny_golems') GAME_STATE.resources.brick.unlocked = true;
+            if (id === 'motherload_machine') {
+                GAME_STATE.resources.copper.unlocked = true;
+                GAME_STATE.resources.iron.unlocked = true;
+            }
+            if (id === 'silver_and_gold') {
+                GAME_STATE.resources.silver.unlocked = true;
+                GAME_STATE.resources.gold.unlocked = true;
+            }
+            if (id === 'autoplat') GAME_STATE.resources.platinum.unlocked = true;
+            if (id === 'shine') GAME_STATE.resources.bluegem.unlocked = true;
+            if (id === 'the_last_one') GAME_STATE.resources.amethyst.unlocked = true;
+        }
+
+        // --- DRAW UPGRADES TECH LIST ---
+        function renderUpgrades() {
+            const container = document.getElementById('upgrades-container');
+            container.innerHTML = '';
+
+            const currentPathUpgrades = Object.values(GAME_STATE.upgrades).filter(u => u.path === currentTab);
+
+            currentPathUpgrades.forEach(upg => {
+                const row = document.createElement('div');
+                const canAfford = GAME_STATE.resources[upg.costRes].amount >= upg.cost;
+                
+                let borderStyle = 'border-slate-800 bg-slate-900/60';
+                if (upg.purchased) borderStyle = 'border-emerald-500/40 bg-emerald-950/10';
+
+                row.className = `p-3.5 rounded-xl border ${borderStyle} flex flex-col gap-2 transition-all duration-200`;
+
+                const actionBtn = upg.purchased 
+                    ? `<span class="text-xs text-emerald-400 font-semibold flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> Installed</span>`
+                    : `<button onclick="purchaseUpgrade('${upg.id}')" ${!canAfford ? 'disabled' : ''} class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 ${
+                        canAfford 
+                        ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/10' 
+                        : 'bg-slate-950/40 border border-slate-800 text-slate-500 cursor-not-allowed'
+                    }">Buy Tech</button>`;
+
+                row.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-sm ${upg.purchased ? 'text-emerald-400' : 'text-slate-100'}">${upg.name}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">${upg.desc}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-slate-850 flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-xs text-slate-400">Cost:</span>
+                            <span class="text-xs font-bold text-amber-400 mono">${upg.cost.toLocaleString()} Coins</span>
+                        </div>
+                        ${actionBtn}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+            lucide.createIcons();
+        }
+
+        // --- UPDATE SYSTEM BUFFS LIST (HEADER) ---
+        function updateBuffsPanel() {
+            const list = document.getElementById('active-buffs-list');
+            list.innerHTML = '';
+
+            const activeUpgrades = Object.values(GAME_STATE.upgrades).filter(u => u.purchased);
+            
+            if (activeUpgrades.length === 0) {
+                list.innerHTML = `<span class="text-xs bg-slate-800/60 text-slate-500 px-2.5 py-1 rounded-lg border border-slate-800">None</span>`;
+                return;
+            }
+
+            const keyBuffs = [
+                { id: 'calculator', label: 'Calculator', icon: 'calculator', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                { id: 'subscribe_gfmag', label: 'GFMAG (+20%)', icon: 'sparkles', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+                { id: 'bribe_them_all', label: 'Bribe active', icon: 'shield-alert', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+                { id: 'nothing_more', label: 'Overclock (+50%)', icon: 'zap', color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' }
+            ];
+
+            let count = 0;
+            keyBuffs.forEach(kb => {
+                if (GAME_STATE.upgrades[kb.id].purchased) {
+                    count++;
+                    const span = document.createElement('span');
+                    span.className = `text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded border ${kb.color} flex items-center gap-1`;
+                    span.innerHTML = `<i data-lucide="${kb.icon}" class="w-3 h-3"></i> ${kb.label}`;
+                    list.appendChild(span);
+                }
+            });
+
+            if (count === 0) {
+                list.innerHTML = `<span class="text-xs bg-slate-800/60 text-slate-500 px-2.5 py-1 rounded-lg border border-slate-800">Basic operations active</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        // --- GAME LOOP / TICKS (PASIVE PRODUCTION & TIMER) ---
+        function gameLoop() {
+            const now = Date.now();
+            const delta = (now - lastTimestamp) / 1000;
+            lastTimestamp = now;
+
+            GAME_STATE.stats.playTime += delta;
+
+            applyPassiveIncome(delta);
+            tickActiveDeals(delta);
+
+            dealSpawnTimer += (delta * 1000);
+            const generationTarget = GAME_STATE.upgrades.more_deals.purchased ? 4500 : dealSpawnInterval;
+            const percentage = Math.min(100, (dealSpawnTimer / generationTarget) * 100);
+            document.getElementById('deal-timer-bar').style.width = `${percentage}%`;
+
+            if (dealSpawnTimer >= generationTarget) {
+                dealSpawnTimer = 0;
+                createTradeDeal();
+            }
+
+            updateVaultUI();
+            updatePortfolioValue();
+            renderUpgrades(); 
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function applyPassiveIncome(delta) {
+            let coinSec = 0;
+            let woodSec = 0;
+            let brickSec = 0;
+            let copperSec = 0;
+            let ironSec = 0;
+            let silverSec = 0;
+            let goldSec = 0;
+            let platSec = 0;
+            let gemSec = 0;
+            let amethystSec = 0;
+
+            if (GAME_STATE.upgrades.invest.purchased) coinSec += 1;
+            if (GAME_STATE.upgrades.treants.purchased) woodSec += 1;
+            if (GAME_STATE.upgrades.tiny_golems.purchased) brickSec += 1;
+            if (GAME_STATE.upgrades.motherload_machine.purchased) {
+                copperSec += 2;
+                ironSec += 1;
+            }
+            if (GAME_STATE.upgrades.silver_and_gold.purchased) {
+                silverSec += 2;
+                goldSec += 1;
+            }
+            if (GAME_STATE.upgrades.autoplat.purchased) platSec += 1;
+            if (GAME_STATE.upgrades.shine.purchased) gemSec += 0.5;
+            if (GAME_STATE.upgrades.the_last_one.purchased) amethystSec += 0.2;
+
+            if (GAME_STATE.upgrades.lawyer.purchased) coinSec *= 2;
+            
+            if (GAME_STATE.upgrades.nothing_more.purchased) {
+                coinSec *= 1.5;
+                woodSec *= 1.5;
+                brickSec *= 1.5;
+                copperSec *= 1.5;
+                ironSec *= 1.5;
+                silverSec *= 1.5;
+                goldSec *= 1.5;
+                platSec *= 1.5;
+                gemSec *= 1.5;
+                amethystSec *= 1.5;
+            }
+
+            GAME_STATE.resources.coin.amount += (coinSec * delta);
+            if (GAME_STATE.resources.wood.unlocked) GAME_STATE.resources.wood.amount += (woodSec * delta);
+            if (GAME_STATE.resources.brick.unlocked) GAME_STATE.resources.brick.amount += (brickSec * delta);
+            if (GAME_STATE.resources.copper.unlocked) GAME_STATE.resources.copper.amount += (copperSec * delta);
+            if (GAME_STATE.resources.iron.unlocked) GAME_STATE.resources.iron.amount += (ironSec * delta);
+            if (GAME_STATE.resources.silver.unlocked) GAME_STATE.resources.silver.amount += (silverSec * delta);
+            if (GAME_STATE.resources.gold.unlocked) GAME_STATE.resources.gold.amount += (goldSec * delta);
+            if (GAME_STATE.resources.platinum.unlocked) GAME_STATE.resources.platinum.amount += (platSec * delta);
+            if (GAME_STATE.resources.bluegem.unlocked) GAME_STATE.resources.bluegem.amount += (gemSec * delta);
+            if (GAME_STATE.resources.ruby.unlocked) GAME_STATE.resources.ruby.amount += (0 * delta); 
+            if (GAME_STATE.resources.amethyst.unlocked) GAME_STATE.resources.amethyst.amount += (amethystSec * delta);
+        }
+
+        function tickActiveDeals(delta) {
+            let listChanged = false;
+            for (let i = GAME_STATE.deals.length - 1; i >= 0; i--) {
+                const deal = GAME_STATE.deals[i];
+                deal.timeLeft -= delta;
+                if (deal.timeLeft <= 0) {
+                    GAME_STATE.deals.splice(i, 1);
+                    listChanged = true;
+                }
+            }
+            if (listChanged || GAME_STATE.deals.length > 0) {
+                renderDeals();
+            }
+        }
+
+        // --- STATS & SAVE MODAL MANAGERS ---
+        function toggleStatsModal() {
+            const modal = document.getElementById('stats-modal');
+            if (modal.classList.contains('hidden')) {
+                const matrix = document.getElementById('stats-commodity-matrix');
+                matrix.innerHTML = '';
+                Object.values(GAME_STATE.resources).forEach(res => {
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between border-b border-slate-800 py-1 px-1';
+                    row.innerHTML = `<span class="text-slate-400">${res.name}:</span> <span class="text-emerald-400 font-bold">${res.value} 🪙</span>`;
+                    matrix.appendChild(row);
+                });
+
+                document.getElementById('stat-trades').innerText = GAME_STATE.stats.totalTrades;
+                document.getElementById('stat-profits').innerText = `${Math.round(GAME_STATE.stats.totalProfits).toLocaleString()} coins`;
+                document.getElementById('stat-clicks').innerText = GAME_STATE.stats.manualClicks;
+                document.getElementById('stat-time').innerText = `${Math.round(GAME_STATE.stats.playTime)}s`;
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // --- LOCAL SAVE & ENCRYPTION SYSTEM ---
+        function generateSerializedSave() {
+            const cleanSave = {
+                resources: Object.keys(GAME_STATE.resources).map(key => ({
+                    id: key,
+                    amount: GAME_STATE.resources[key].amount,
+                    unlocked: GAME_STATE.resources[key].unlocked
+                })),
+                upgrades: Object.keys(GAME_STATE.upgrades).map(key => ({
+                    id: key,
+                    purchased: GAME_STATE.upgrades[key].purchased
+                })),
+                stats: { ...GAME_STATE.stats }
+            };
+            return btoa(unescape(encodeURIComponent(JSON.stringify(cleanSave))));
+        }
+
+        function loadSerializedSave(base64String) {
+            try {
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(base64String))));
+                
+                // Load Resources
+                if (Array.isArray(decoded.resources)) {
+                    decoded.resources.forEach(item => {
+                        if (GAME_STATE.resources[item.id]) {
+                            GAME_STATE.resources[item.id].amount = item.amount;
+                            GAME_STATE.resources[item.id].unlocked = item.unlocked;
+                        }
+                    });
+                }
+
+                // Load Upgrades
+                if (Array.isArray(decoded.upgrades)) {
+                    decoded.upgrades.forEach(item => {
+                        if (GAME_STATE.upgrades[item.id]) {
+                            GAME_STATE.upgrades[item.id].purchased = item.purchased;
+                        }
+                    });
+                }
+
+                // Load Stats
+                if (decoded.stats) {
+                    GAME_STATE.stats = { ...GAME_STATE.stats, ...decoded.stats };
+                }
+
+                // Re-sync UI state
+                updateVaultUI();
+                updatePortfolioValue();
+                renderUpgrades();
+                updateBuffsPanel();
+                return true;
+            } catch (err) {
+                console.error("Failed to parse save code string", err);
+                return false;
+            }
+        }
+
+        // Manual backup save codes
+        function exportSaveCode() {
+            const saveCode = generateSerializedSave();
+            
+            // iFrame safe custom copy logic
+            const textarea = document.createElement('textarea');
+            textarea.value = saveCode;
+            textarea.style.position = 'fixed'; 
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Save Copied!", "Portable backup save string copied to clipboard successfully!");
+            } catch (err) {
+                showToast("Clipboard blocked", "Please copy the code manually from your console.", true);
+                console.log("Your manual backup string code is:", saveCode);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function promptImportSaveCode() {
+            const importModal = document.getElementById('import-modal');
+            const codeArea = document.getElementById('import-code-area');
+            codeArea.value = '';
+            importModal.classList.remove('hidden');
+            setTimeout(() => importModal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeImportModal() {
+            const importModal = document.getElementById('import-modal');
+            importModal.classList.add('opacity-0');
+            setTimeout(() => importModal.classList.add('hidden'), 300);
+        }
+
+        function submitImportSaveCode() {
+            const codeArea = document.getElementById('import-code-area');
+            const codeString = codeArea.value.trim();
+            if (!codeString) {
+                showToast("Empty code", "Please paste your code into the text area.", true);
+                return;
+            }
+
+            const success = loadSerializedSave(codeString);
+            if (success) {
+                playSound('upgrade');
+                showToast("Progress Restored!", "Your tradecraft vault has been successfully restored.");
+                closeImportModal();
+            } else {
+                playSound('error');
+                showToast("Failed to load", "Invalid or corrupted backup string code provided.", true);
+            }
+        }
+
+        // --- BROWSER CLOUD SAVING SYSTEM (FIRESTORE) ---
+        function updateCloudStatus(text) {
+            const el = document.getElementById('cloud-status');
+            if (el) el.innerText = text;
+        }
+
+        async function initFirebaseStorage() {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                try {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    hasFirebase = true;
+
+                    updateCloudStatus("Connecting...");
+
+                    // Auth Rule 3 Setup
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, async (user) => {
+                        currentUser = user;
+                        if (user) {
+                            updateCloudStatus("Synced");
+                            // Attempt to auto-restore from previous browser session
+                            await autoLoadFromCloud();
+                        } else {
+                            updateCloudStatus("Disconnected");
+                        }
+                    });
+
+                } catch (err) {
+                    console.error("Firebase Initialization Failed:", err);
+                    updateCloudStatus("Offline Mode");
+                }
+            } else {
+                updateCloudStatus("Local Only");
+            }
+        }
+
+        async function saveToCloud() {
+            if (!hasFirebase || !currentUser) {
+                playSound('error');
+                showToast("Cloud Disabled", "Database environment not connected. Use Local Copy/Paste saves instead!", true);
+                return;
+            }
+
+            try {
+                const rawCode = generateSerializedSave();
+                // Rule 1 private write path: /artifacts/{appId}/users/{userId}/saves/current
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'saves', 'current');
+                
+                await setDoc(docRef, {
+                    payload: rawCode,
+                    lastUpdated: new Date().toISOString()
+                });
+
+                showToast("Cloud Synced!", "Your tradecraft vault progress has been secured in the browser cloud.");
+                playSound('trade-success');
+            } catch (err) {
+                console.error("Failed writing cloud state", err);
+                showToast("Save Failed", "Encountered cloud validation permissions. Use Export Copy Code.", true);
+            }
+        }
+
+        async function loadFromCloud() {
+            if (!hasFirebase || !currentUser) {
+                playSound('error');
+                showToast("Cloud Disabled", "Your browser is operating offline. Use Import Local Code instead.", true);
+                return;
+            }
+
+            try {
+                // Rule 1 private fetch path
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'saves', 'current');
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.payload) {
+                        const success = loadSerializedSave(data.payload);
+                        if (success) {
+                            showToast("Cloud Save Restored!", "Automatically recovered your previous progress from browser cloud.");
+                            playSound('upgrade');
+                        }
+                    }
+                } else {
+                    showToast("No Cloud Progress", "No existing browser cloud data found for your device session.", true);
+                }
+            } catch (err) {
+                console.error("Cloud fetch failed", err);
+                showToast("Recovery Failed", "Could not query data. Use local codes.", true);
+            }
+        }
+
+        async function autoLoadFromCloud() {
+            if (!hasFirebase || !currentUser) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'saves', 'current');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.payload) {
+                        loadSerializedSave(data.payload);
+                        showToast("Loaded Vault!", "Your cloud progress was automatically loaded.");
+                    }
+                }
+            } catch (err) {
+                console.warn("Auto recovery bypass", err);
+            }
+        }
+
+        // --- WIN GAME MODAL ---
+        let winTriggered = false;
+        function triggerVictory() {
+            if (winTriggered) return;
+            winTriggered = true;
+            
+            document.getElementById('vic-val').innerText = getPortfolioValue().toLocaleString();
+            document.getElementById('vic-trades').innerText = GAME_STATE.stats.totalTrades;
+            document.getElementById('vic-time').innerText = `${Math.round(GAME_STATE.stats.playTime)}s`;
+
+            document.getElementById('victory-modal').classList.remove('hidden');
+        }
+
+        function resetGame() {
+            winTriggered = false;
+            GAME_STATE.resources.coin.amount = 20;
+            Object.keys(GAME_STATE.resources).forEach(k => {
+                if (k !== 'coin') {
+                    GAME_STATE.resources[k].amount = 0;
+                    GAME_STATE.resources[k].unlocked = false;
+                }
+            });
+            Object.keys(GAME_STATE.upgrades).forEach(k => {
+                GAME_STATE.upgrades[k].purchased = false;
+            });
+            GAME_STATE.deals = [];
+            GAME_STATE.stats.totalTrades = 0;
+            GAME_STATE.stats.totalProfits = 0;
+            GAME_STATE.stats.manualClicks = 0;
+            GAME_STATE.stats.playTime = 0;
+
+            document.getElementById('victory-modal').classList.add('hidden');
+            updateVaultUI();
+            updatePortfolioValue();
+            renderUpgrades();
+            updateBuffsPanel();
+            switchTab('gathering');
+        }
+
+        // --- TOAST NOTIFICATIONS ---
+        let toastTimeout;
+        function showToast(title, message, isError = false) {
+            const toast = document.getElementById('notification-toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = message;
+            
+            if (isError) {
+                toast.firstElementChild.classList.add('border-rose-500/30', 'bg-rose-950/20');
+                toast.firstElementChild.firstElementChild.className = 'bg-rose-500/10 text-rose-400 p-1.5 rounded-lg border border-rose-500/20';
+            } else {
+                toast.firstElementChild.classList.remove('border-rose-500/30', 'bg-rose-950/20');
+                toast.firstElementChild.firstElementChild.className = 'bg-emerald-500/10 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/20';
+            }
+
+            clearTimeout(toastTimeout);
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // --- BIND MODULAR SCOPES GLOBALLY TO WINDOW ---
+        window.switchTab = switchTab;
+        window.gatherResource = gatherResource;
+        window.executeTrade = executeTrade;
+        window.purchaseUpgrade = purchaseUpgrade;
+        window.toggleStatsModal = toggleStatsModal;
+        window.resetGame = resetGame;
+        window.exportSaveCode = exportSaveCode;
+        window.promptImportSaveCode = promptImportSaveCode;
+        window.closeImportModal = closeImportModal;
+        window.submitImportSaveCode = submitImportSaveCode;
+        window.saveToCloud = saveToCloud;
+        window.loadFromCloud = loadFromCloud;
+
+        // --- INTERACTIVE MUTE CONTROLLER ---
+        document.getElementById('btn-mute').addEventListener('click', () => {
+            isMuted = !isMuted;
+            const icon = document.getElementById('mute-icon');
+            if (isMuted) {
+                icon.setAttribute('data-lucide', 'volume-x');
+                document.getElementById('btn-mute').classList.add('bg-red-950/20', 'border-red-900/40', 'text-red-400');
+            } else {
+                icon.setAttribute('data-lucide', 'volume-2');
+                document.getElementById('btn-mute').classList.remove('bg-red-950/20', 'border-red-900/40', 'text-red-400');
+            }
+            lucide.createIcons();
+        });
+
+        document.getElementById('btn-stats').addEventListener('click', toggleStatsModal);
+
+        // --- WINDOW ONLOAD INITIALIZATION ---
+        window.onload = function () {
+            updateVaultUI();
+            updatePortfolioValue();
+            renderUpgrades();
+            updateBuffsPanel();
+
+            switchTab('gathering');
+
+            // Initialize sandboxed browser state connectivity (Firestore)
+            initFirebaseStorage();
+
+            lastTimestamp = Date.now();
+            requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+</html>
